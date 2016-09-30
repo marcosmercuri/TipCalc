@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,10 +58,48 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void about() {
+        Intent openBrowserIntent = new Intent(Intent.ACTION_VIEW);
+        openBrowserIntent.setData(Uri.parse(TipCalcApplication.ABOUT_URL));
+        startActivity(openBrowserIntent);
+    }
+
     @OnClick(R.id.btnSubmit)
     public void handleClickSubmit() {
         Log.d(getLocalClassName(), "Click in submit");
         hideKeyboard();
+        processPercentageFromInput();
+    }
+
+    private void processPercentageFromInput() {
+        String totalInputString = inputBill.getText().toString().trim();
+        if ( ! totalInputString.isEmpty()) {
+            double tip = calculatePercentage(totalInputString);
+            showTipInView(tip);
+        }
+    }
+
+    private void showTipInView(double tip) {
+        String tipString = String.format(getString(R.string.global_message_tip), tip);
+        txtTip.setVisibility(View.VISIBLE);
+        txtTip.setText(tipString);
+    }
+
+    private double calculatePercentage(String totalInputString) {
+        double total = Double.parseDouble(totalInputString);
+        int tipPercentage = getTipPercentage();
+        return total * tipPercentage / 100;
+    }
+
+    public int getTipPercentage() {
+        int tipPercentage = DEFAULT_TIP_PERCENTAGE;
+        String inputTipPercentage = inputPercentage.getText().toString().trim();
+        if ( ! inputTipPercentage.isEmpty()) {
+            tipPercentage = Integer.parseInt(inputTipPercentage);
+        } else {
+            inputPercentage.setText(String.valueOf(tipPercentage));
+        }
+        return tipPercentage;
     }
 
     private void hideKeyboard() {
@@ -75,9 +114,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void about() {
-        Intent openBrowserIntent = new Intent(Intent.ACTION_VIEW);
-        openBrowserIntent.setData(Uri.parse(TipCalcApplication.ABOUT_URL));
-        startActivity(openBrowserIntent);
+    @OnClick(R.id.btnIncrease)
+    public void handleClickIncrease() {
+        hideKeyboard();
+        handleTipChange(TIP_STEP_CHANGE);
+    }
+
+    @OnClick(R.id.btnDecrease)
+    public void handleClickDecrease() {
+        hideKeyboard();
+        handleTipChange( - TIP_STEP_CHANGE);
+    }
+
+    private void handleTipChange(int change) {
+        int tipPercentage = getTipPercentage();
+        tipPercentage += change;
+        if (tipPercentage > 0) {
+            inputPercentage.setText(String.valueOf(tipPercentage));
+        }
     }
 }
