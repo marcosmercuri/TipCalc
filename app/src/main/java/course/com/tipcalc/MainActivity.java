@@ -64,11 +64,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hideKeyboard() {
-        InputMethodManager intputManager =
+        InputMethodManager inputManager =
                 (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         try {
-            intputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS);
         } catch (NullPointerException npe) {
             Log.e(getLocalClassName(), Log.getStackTraceString(npe));
