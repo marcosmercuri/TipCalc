@@ -1,4 +1,4 @@
-package course.com.tipcalc;
+package course.com.tipcalc.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,10 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import course.com.tipcalc.R;
+import course.com.tipcalc.TipCalcApplication;
+import course.com.tipcalc.fragments.TipHistoryListFragment;
+import course.com.tipcalc.fragments.TipHistoryListFragmentListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final int TIP_STEP_CHANGE = 1;
@@ -37,11 +41,18 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.txtTip)
     TextView txtTip;
 
+    TipHistoryListFragmentListener fragmentListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        TipHistoryListFragment fragment =
+                (TipHistoryListFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentList);
+        fragment.setRetainInstance(true);
+        fragmentListener = fragment;
     }
 
     @Override
@@ -75,8 +86,13 @@ public class MainActivity extends AppCompatActivity {
         String totalInputString = inputBill.getText().toString().trim();
         if ( ! totalInputString.isEmpty()) {
             double tip = calculatePercentage(totalInputString);
+            showTipInFragment(tip);
             showTipInView(tip);
         }
+    }
+
+    private void showTipInFragment(double tip) {
+        fragmentListener.action(String.valueOf(tip));
     }
 
     private void showTipInView(double tip) {
