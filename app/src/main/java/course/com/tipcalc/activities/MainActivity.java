@@ -10,9 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -21,6 +22,7 @@ import course.com.tipcalc.R;
 import course.com.tipcalc.TipCalcApplication;
 import course.com.tipcalc.fragments.TipHistoryListFragment;
 import course.com.tipcalc.fragments.TipHistoryListFragmentListener;
+import course.com.tipcalc.model.TipRecord;
 
 public class MainActivity extends AppCompatActivity {
     private static final int TIP_STEP_CHANGE = 1;
@@ -28,16 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.inputBill)
     EditText inputBill;
-    @Bind(R.id.btnSubmit)
-    Button btnSubmit;
     @Bind(R.id.inputPercentage)
     EditText inputPercentage;
-    @Bind(R.id.btnIncrease)
-    Button btnIncrease;
-    @Bind(R.id.btnDecrease)
-    Button btnDecrease;
-    @Bind(R.id.btnClear)
-    Button btnClear;
     @Bind(R.id.txtTip)
     TextView txtTip;
 
@@ -85,26 +79,29 @@ public class MainActivity extends AppCompatActivity {
     private void processPercentageFromInput() {
         String totalInputString = inputBill.getText().toString().trim();
         if ( ! totalInputString.isEmpty()) {
-            double tip = calculatePercentage(totalInputString);
-            showTipInFragment(tip);
+            TipRecord tipRecord = createTipRecord(totalInputString);
+            addToFragment(tipRecord);
+            double tip = tipRecord.getTip();
             showTipInView(tip);
         }
     }
 
-    private void showTipInFragment(double tip) {
-        fragmentListener.action(String.valueOf(tip));
+    private TipRecord createTipRecord(String totalInputString) {
+        TipRecord tipRecord = new TipRecord();
+        tipRecord.setBill(Double.parseDouble(totalInputString));
+        tipRecord.setTipPercentage(getTipPercentage());
+        tipRecord.setCreatedDate(new Date());
+        return tipRecord;
+    }
+
+    private void addToFragment(TipRecord tipRecord) {
+        fragmentListener.addToList(tipRecord);
     }
 
     private void showTipInView(double tip) {
         String tipString = String.format(getString(R.string.global_message_tip), tip);
         txtTip.setVisibility(View.VISIBLE);
         txtTip.setText(tipString);
-    }
-
-    private double calculatePercentage(String totalInputString) {
-        double total = Double.parseDouble(totalInputString);
-        int tipPercentage = getTipPercentage();
-        return total * tipPercentage / 100;
     }
 
     public int getTipPercentage() {
@@ -140,6 +137,11 @@ public class MainActivity extends AppCompatActivity {
     public void handleClickDecrease() {
         hideKeyboard();
         handleTipChange( - TIP_STEP_CHANGE);
+    }
+
+    @OnClick(R.id.btnClear)
+    public void handleClickClear() {
+        fragmentListener.clearList();
     }
 
     private void handleTipChange(int change) {

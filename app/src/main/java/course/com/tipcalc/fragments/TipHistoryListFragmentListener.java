@@ -1,6 +1,9 @@
 package course.com.tipcalc.fragments;
 
 
+import course.com.tipcalc.model.TipRecord;
+
 public interface TipHistoryListFragmentListener {
-    void action(String str);
+    void addToList(TipRecord record);
+    void clearList();
 }
