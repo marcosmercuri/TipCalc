@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.txtTip)
     TextView txtTip;
 
-    TipHistoryListFragmentListener fragmentListener;
+    private TipHistoryListFragmentListener fragmentListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
