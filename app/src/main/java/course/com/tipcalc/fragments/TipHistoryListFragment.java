@@ -1,6 +1,7 @@
 package course.com.tipcalc.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,11 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import course.com.tipcalc.R;
+import course.com.tipcalc.activities.TipDetailActivity;
+import course.com.tipcalc.adapters.OnItemClickListener;
 import course.com.tipcalc.adapters.TipAdapter;
 import course.com.tipcalc.model.TipRecord;
 
@@ -21,16 +22,14 @@ import course.com.tipcalc.model.TipRecord;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TipHistoryListFragment extends Fragment implements TipHistoryListFragmentListener{
+public class TipHistoryListFragment extends Fragment implements TipHistoryListFragmentListener, OnItemClickListener {
     @Bind(R.id.listRecyclerView)
     RecyclerView recyclerView;
     private TipAdapter adapter;
 
-
     public TipHistoryListFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,7 +49,7 @@ public class TipHistoryListFragment extends Fragment implements TipHistoryListFr
 
     private void initAdapter() {
         if (adapter == null) {
-            adapter = new TipAdapter(new ArrayList<TipRecord>(), getActivity().getApplicationContext());
+            adapter = new TipAdapter(getActivity().getApplicationContext(), this);
         }
     }
 
@@ -62,5 +61,14 @@ public class TipHistoryListFragment extends Fragment implements TipHistoryListFr
     @Override
     public void clearList() {
         adapter.clear();
+    }
+
+    @Override
+    public void onItemClick(TipRecord tipRecord) {
+        Intent intent = new Intent(getActivity(), TipDetailActivity.class);
+        intent.putExtra(TipDetailActivity.TIP_KEY, tipRecord.getTip());
+        intent.putExtra(TipDetailActivity.TOTAL_KEY, tipRecord.getBill());
+        intent.putExtra(TipDetailActivity.TIMESTAMP_KEY, tipRecord.getFormattedCreatedDate());
+        startActivity(intent);
     }
 }
