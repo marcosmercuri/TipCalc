@@ -38,7 +38,7 @@ public class TipRecord {
     }
 
     public String getFormattedCreatedDate() {
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyyy HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         return format.format(createdDate);
     }
 }
